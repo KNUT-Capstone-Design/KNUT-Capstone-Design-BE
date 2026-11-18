@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "knut-capstone-design-be"
+version = "0.1.0"
+description = "KNUT Capstone Design backend"
+requires-python = ">=3.12"
+dependencies = [
+  "alembic==1.17.2",
+  "email-validator==2.3.0",
+  "fastapi==0.121.3",
+  "psycopg[binary]==3.2.13",
+  "pwdlib[argon2]==0.3.0",
+  "pydantic-settings==2.12.0",
+  "PyJWT==2.10.1",
+  "sqlalchemy==2.0.44",
+  "uvicorn[standard]==0.38.0",
+]
+
+[project.optional-dependencies]
+test = [
+  "httpx==0.28.1",
+  "pytest==9.0.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
