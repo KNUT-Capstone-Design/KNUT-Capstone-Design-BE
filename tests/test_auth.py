@@ -19,6 +19,7 @@ def test_signup_login_me_refresh_logout(client: TestClient):
     assert body["access_token"]
     assert "refresh_token=" in response.headers["set-cookie"]
     assert "HttpOnly" in response.headers["set-cookie"]
+    assert "SameSite=lax" in response.headers["set-cookie"]
 
     me = client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {body['access_token']}"})
     assert me.status_code == 200

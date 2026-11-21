@@ -29,7 +29,7 @@ Run tests with `.venv/bin/pytest`.
 
 ## Docker deployment
 
-Create `.env` without committing it. At minimum set `POSTGRES_PASSWORD`, a random 32+ character `JWT_SECRET`, the HTTPS frontend URL in `ALLOWED_ORIGINS`, `APP_ENV=production`, and `REFRESH_COOKIE_SECURE=true`.
+Create `.env` without committing it. At minimum set `POSTGRES_PASSWORD`, a random 32+ character `JWT_SECRET`, the HTTPS frontend URL in `ALLOWED_ORIGINS`, the API hostname in `API_DOMAIN`, `APP_ENV=production`, and `REFRESH_COOKIE_SECURE=true`. When the frontend and API are on different sites, also set `REFRESH_COOKIE_SAMESITE=none`.
 
 ```bash
 docker compose up --build -d
@@ -37,7 +37,7 @@ docker compose ps
 curl http://127.0.0.1:8000/api/v1/health
 ```
 
-The API binds only to `127.0.0.1:8000`; expose it through the server's existing HTTPS reverse proxy. PostgreSQL has no host port mapping.
+The API binds only to `127.0.0.1:8000`. Caddy exposes ports 80/443, obtains TLS certificates for `API_DOMAIN`, and proxies requests to the API over the private Compose network. PostgreSQL has no host port mapping.
 
 Create or promote the service administrator interactively:
 
@@ -46,4 +46,3 @@ docker compose exec api python -m scripts.create_admin --email admin@example.com
 ```
 
 Schema changes run in the one-shot `migrate` service before the API starts. Never use `docker compose down -v` in production because it deletes the PostgreSQL volume.
-

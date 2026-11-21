@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 15
     refresh_token_expire_days: int = 14
     refresh_cookie_secure: bool = False
+    refresh_cookie_samesite: str = "lax"
     allowed_origins: list[str] = ["http://localhost:3000"]
 
     @field_validator("allowed_origins", mode="before")
@@ -23,6 +24,10 @@ class Settings(BaseSettings):
         return value
 
     def validate_for_startup(self) -> None:
+        if self.refresh_cookie_samesite not in {"lax", "strict", "none"}:
+            raise RuntimeError("REFRESH_COOKIE_SAMESITE must be lax, strict, or none")
+        if self.refresh_cookie_samesite == "none" and not self.refresh_cookie_secure:
+            raise RuntimeError("SameSite=None refresh cookies must be secure")
         if self.app_env == "production":
             if len(self.jwt_secret) < 32 or self.jwt_secret.startswith("development-"):
                 raise RuntimeError("JWT_SECRET must be a random value of at least 32 characters")
